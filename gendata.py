@@ -32,44 +32,34 @@ verbose_global = DEFAULT_VERBOSE
 
 
 def setup_environment_variables():
-    # set csw and home_dir variables
+    # set csw variables
     cwd = os.getcwd()
     print('cwd: {}'.format(cwd))
-    home_dir = os.path.expanduser("~")
-    print('home_dir: {}'.format(home_dir))
-
-    repo_name = 'breast-cancer'
-    repo_dir = os.path.join(home_dir, repo_name)
-    if os.path.isdir(repo_dir):
-        print('repo_dir: {}'.format(repo_dir))
-    else: 
-        print('ERROR: repository is not under home_dir ("{}"") or is not named "{}"'.format(home_dir, repo_name))
-        return
         
-    data_dir = os.path.join(repo_dir, 'data')
+    data_dir = os.path.join(cwd, 'data')
     if os.path.isdir(data_dir):
         print('data_dir: {}'.format(data_dir))
     else: 
-        print('oops! directory named "data" not found under "{}"'.format(repo_dir))
-        data_dir = os.path.join(repo_dir, 'data')
+        print('oops! directory named "data" not found under "{}"'.format(cwd))
+        data_dir = os.path.join(cwd, 'data')
     
-    eda_dir = os.path.join(repo_dir, 'EDA')
+    eda_dir = os.path.join(cwd, 'EDA')
     if os.path.isdir(eda_dir):
         print('eda_dir: {}'.format(eda_dir))
     else: 
-        print('directory named "EDA" not found under "{}"'.format(repo_dir))
+        print('directory named "EDA" not found under "{}"'.format(cwd))
         print('creating "EDA" dir... "{}"'.format(eda_dir))
         os.makedirs(eda_dir)
         
-    part_dir = os.path.join(repo_dir, 'part-files')
+    part_dir = os.path.join(cwd, 'part-files')
     if os.path.isdir(part_dir):
         print('part_dir: {}'.format(part_dir))
     else: 
-        print('directory named "part-files" not found under "{}"'.format(repo_dir))
+        print('directory named "part-files" not found under "{}"'.format(cwd))
         print('creating "part-files" dir... "{}"'.format(part_dir))
         os.makedirs(part_dir)
         
-    return cwd, home_dir, repo_dir, data_dir, eda_dir, part_dir
+    return cwd, data_dir, eda_dir, part_dir
 
 
 def now():
@@ -89,7 +79,7 @@ def name_df(df, name, desc=""):
 def create_initial_cancer_dataset():
     # open the  cancer data file
     cancer_dataset_name = 'cancer_data'
-    cancer_df = pd.read_csv(os.path.join(home_dir, data_dir, cancer_dataset_name+".csv"))
+    cancer_df = pd.read_csv(os.path.join(cwd, data_dir, cancer_dataset_name+".csv"))
 
     # convert 'diagnosis' column to a categorical
     cancer_df['diagnosis'] = pd.Categorical(cancer_df['diagnosis'], cancer_categories, ordered=True).codes
@@ -313,7 +303,7 @@ if __name__ == "__main__":
     N = my_args['num_copies_value']
 
     # initialize global environment variables ...
-    cwd, home_dir, repo_dir, data_dir, eda_dir, part_dir = setup_environment_variables()
+    cwd, data_dir, eda_dir, part_dir = setup_environment_variables()
 
     # setup 'cancer_categories' to be used to convert 'B' and 'M' into categorical (numeric) values
     cancer_categories = ['B', 'M']
