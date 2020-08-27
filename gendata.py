@@ -39,14 +39,14 @@ def setup_environment_variables():
     data_dir = os.path.join(cwd, 'data')
     if os.path.isdir(data_dir):
         print('data_dir: {}'.format(data_dir))
-    else: 
+    else:
         print('oops! directory named "data" not found under "{}"'.format(cwd))
         data_dir = os.path.join(cwd, 'data')
 
     eda_dir = os.path.join(cwd, 'EDA')
     if os.path.isdir(eda_dir):
         print('eda_dir: {}'.format(eda_dir))
-    else: 
+    else:
         print('directory named "EDA" not found under "{}"'.format(cwd))
         print('creating "EDA" dir... "{}"'.format(eda_dir))
         os.makedirs(eda_dir)
@@ -54,7 +54,7 @@ def setup_environment_variables():
     part_dir = os.path.join(cwd, 'part-files')
     if os.path.isdir(part_dir):
         print('part_dir: {}'.format(part_dir))
-    else: 
+    else:
         print('directory named "part-files" not found under "{}"'.format(cwd))
         print('creating "part-files" dir... "{}"'.format(part_dir))
         os.makedirs(part_dir)
@@ -65,21 +65,21 @@ def setup_environment_variables():
 def now():
     from datetime import datetime
     return datetime.now().strftime("%d%m%Y-%H:%M:%S")
-    
+
 
 def name_df(df, name, desc=""):
     from datetime import date
-    if desc =="":
-        df.name = "".join((name,"-",now()))
+    if desc == "":
+        df.name = "".join((name, "-", now()))
     else:
-        df.name = "".join((name,"-",now(),"-(", desc, ")"))
+        df.name = "".join((name, "-", now(), "-(", desc, ")"))
     return name
 
 
 def create_initial_cancer_dataset():
     # open the  cancer data file
     cancer_dataset_name = 'cancer_data'
-    cancer_df = pd.read_csv(os.path.join(cwd, data_dir, cancer_dataset_name+".csv"))
+    cancer_df = pd.read_csv(os.path.join(cwd, data_dir, cancer_dataset_name + ".csv"))
 
     # convert 'diagnosis' column to a categorical
     cancer_df['diagnosis'] = pd.Categorical(cancer_df['diagnosis'], cancer_categories, ordered=True).codes
@@ -101,10 +101,10 @@ def create_imbalanced_dataset(df, over_balance_on, N=100, verbose=False):
         print('original dataframe: {} rows, new/temp dataframe: {} rows\n'.format(len(df), len(df2)))
 
     # assuming (for now) that we are balancing relative to a 'diagnosis' (that is binary classification: 0 or 1)
-    # validate the the 'over_balance_on' parm .. 
+    # validate the the 'over_balance_on' parm ..
     if over_balance_on == 0:
         minority = 1
-    elif over_balance_on == 1: 
+    elif over_balance_on == 1:
         minority = 0
     else:
         print("ERROR: over_balance_on has to be 0 or 1 (binary classificaion only)!")
@@ -136,12 +136,12 @@ def print_balance_stats(df):
     m_rows = len(df.query('diagnosis=={}'.format(M)))
     t_rows = len(df)
     if m_rows > b_rows:
-        print("dataframe is over balanced toward '{}' ({:.2F}%)".format(cancer_categories[M], (m_rows/t_rows)*100))
+        print("dataframe is over balanced toward '{}' ({:.2F}%)".format(cancer_categories[M], (m_rows / t_rows) * 100))
     elif b_rows > m_rows:
-        print("dataframe is over balanced toward '{}' ({:.2F}%)".format(cancer_categories[M], (b_rows/t_rows)*100))
+        print("dataframe is over balanced toward '{}' ({:.2F}%)".format(cancer_categories[M], (b_rows / t_rows) * 100))
     else:
         print("the dataframe is balanced!")
-    print("B: {}, M: {}, total: {}  ({})".format(b_rows, m_rows, t_rows, (m_rows+b_rows)==t_rows))
+    print("B: {}, M: {}, total: {}  ({})".format(b_rows, m_rows, t_rows, (m_rows + b_rows) == t_rows))
 
     return b_rows, m_rows, t_rows
 
@@ -149,8 +149,8 @@ def print_balance_stats(df):
 def balance_dataset(df, verbose=False):
 
     # pass 'balance_dataset' a dataframe that should ideally be imbalanced and 'balance_dataset'
-    # will apply Synthetic Minority Over-sampling Technique (aka: SMOTE) to reblance the data 
-    # 
+    # will apply Synthetic Minority Over-sampling Technique (aka: SMOTE) to reblance the data
+    #
     # the re-balancing technique involves breaking the dataframe into
     #     y    a 'target_vector' which is essentially the 'diagnosis' column from 'df'
     #     X    the features matrix which is essentially all the remaining columns in the matrix
@@ -161,11 +161,11 @@ def balance_dataset(df, verbose=False):
 
     # separate the feature matrix (X) from the 'target vector' (y)
     # WARNING: code below assumes that the 'diagnosis', it the first column () in the dataframe
-    # should re-write it to work regardless of column order... 
-    y = df.iloc[:,0].values
-    X = df.iloc[:,1:].values
+    # should re-write it to work regardless of column order...
+    y = df.iloc[:, 0].values
+    X = df.iloc[:, 1:].values
 
-    # apply Synthetic Minority Over-sampling Technique (aka: SMOTE) to reblance the data 
+    # apply Synthetic Minority Over-sampling Technique (aka: SMOTE) to reblance the data
     # (creating a 50/50 ratio of malignant and benign cases)
 
     # note: SMOTE will return "re-sampled" versions of X and y that have additional entries created
@@ -175,7 +175,7 @@ def balance_dataset(df, verbose=False):
 
     # reassemble the dataframe into 'rebalanced_df' (which will be returned from the function)
 
-    # build a list of column names 
+    # build a list of column names
     column_names = list(cancer_df.columns)
     if verbose:
         print(column_names)
@@ -201,7 +201,7 @@ def gen_new_data(N, P, dataset_name, verbose=verbose_global):
         print('\nrebalanced_df: should have M == B')
         rebalanced_df = balance_dataset(malignant_imbalanced)
         _, _, _ = print_balance_stats(rebalanced_df)
-        new_df = rebalanced_df.query('diagnosis=={}'.format(B)) 
+        new_df = rebalanced_df.query('diagnosis=={}'.format(B))
 
         benign_imbalanced = create_imbalanced_dataset(cancer_df, B, N)
         print('\nmalignant_imbalanced: should have B >> M')
@@ -278,8 +278,6 @@ def setup_arg_parser():
                             help="Verbose flag: 'lb' will print out more verbose messages.",
                             required=False, action="store_true", default=DEFAULT_VERBOSE)
 
-
-
     # skip?
     arg_parser.add_argument('--skip_flag', '-Z',
                             help="Skip all processing - useful for debugging argument parsing. (default=False)",
@@ -312,7 +310,7 @@ if __name__ == "__main__":
     M = cancer_categories.index('M')
 
     # initialize cancer_df from the raw data file
-    cancer_df, cancer_dataset_name  = create_initial_cancer_dataset()
+    cancer_df, cancer_dataset_name = create_initial_cancer_dataset()
     print('cancer_df.name: "{}"'.format(cancer_df.name))
 
     gen_new_data(N, P, cancer_dataset_name)
