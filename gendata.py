@@ -214,7 +214,7 @@ def gen_new_data(N, P, dataset_name, verbose=verbose_global):
         new_df = new_df.append(rebalanced_df.query('diagnosis=={}'.format(M)))
 
         pf_name = os.path.join(part_dir, '{}-{}.csv'.format(dataset_name, str(i).zfill(5)))
-        print('\n*** new artfile: {}\n'.format(pf_name))
+        print('\n*** new partfile: {}\n'.format(pf_name))
         new_df.to_csv(pf_name, index=False)
 
 
