@@ -11,7 +11,7 @@ Purpose
 
 Created on Sun Mar 3 12:08:00 2019
 
-@author: badscooter23 (scott.mcclellan@prgx.com)
+@author: badscooter23 (scott.j.mcclellan@gmail.com)
 """
 
 # import various libraries - these are all used in the Jupyter notebook
