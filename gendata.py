@@ -32,7 +32,7 @@ verbose_global = DEFAULT_VERBOSE
 
 
 def setup_environment_variables():
-    # set csw variables
+    # set cwd variables
     cwd = os.getcwd()
     print('cwd: {}'.format(cwd))
         
