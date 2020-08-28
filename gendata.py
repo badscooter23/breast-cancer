@@ -76,7 +76,7 @@ def name_df(df, name, desc=""):
     return name
 
 
-def create_initial_cancer_dataset():
+def create_initial_cancer_dataset(data_dir):
     # open the  cancer data file
     cancer_dataset_name = 'cancer_data'
     cancer_df = pd.read_csv(os.path.join(data_dir, cancer_dataset_name + ".csv"))
@@ -301,7 +301,7 @@ if __name__ == "__main__":
     N = my_args['num_copies_value']
 
     # initialize global environment variables ...
-    data_dir, eda_dir, part_dir = setup_environment_variables()
+    _data_dir, eda_dir, part_dir = setup_environment_variables()
 
     # setup 'cancer_categories' to be used to convert 'B' and 'M' into categorical (numeric) values
     cancer_categories = ['B', 'M']
@@ -310,7 +310,7 @@ if __name__ == "__main__":
     M = cancer_categories.index('M')
 
     # initialize cancer_df from the raw data file
-    cancer_df, cancer_dataset_name = create_initial_cancer_dataset()
+    cancer_df, cancer_dataset_name = create_initial_cancer_dataset(_data_dir)
     print('cancer_df.name: "{}"'.format(cancer_df.name))
 
     gen_new_data(N, P, cancer_dataset_name)
