@@ -59,7 +59,7 @@ def setup_environment_variables():
         print('creating "part-files" dir... "{}"'.format(part_dir))
         os.makedirs(part_dir)
 
-    return cwd, data_dir, eda_dir, part_dir
+    return data_dir, eda_dir, part_dir
 
 
 def now():
@@ -79,7 +79,7 @@ def name_df(df, name, desc=""):
 def create_initial_cancer_dataset():
     # open the  cancer data file
     cancer_dataset_name = 'cancer_data'
-    cancer_df = pd.read_csv(os.path.join(cwd, data_dir, cancer_dataset_name + ".csv"))
+    cancer_df = pd.read_csv(os.path.join(data_dir, cancer_dataset_name + ".csv"))
 
     # convert 'diagnosis' column to a categorical
     cancer_df['diagnosis'] = pd.Categorical(cancer_df['diagnosis'], cancer_categories, ordered=True).codes
@@ -301,7 +301,7 @@ if __name__ == "__main__":
     N = my_args['num_copies_value']
 
     # initialize global environment variables ...
-    cwd, data_dir, eda_dir, part_dir = setup_environment_variables()
+    data_dir, eda_dir, part_dir = setup_environment_variables()
 
     # setup 'cancer_categories' to be used to convert 'B' and 'M' into categorical (numeric) values
     cancer_categories = ['B', 'M']
