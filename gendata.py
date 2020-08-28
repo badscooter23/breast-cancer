@@ -302,7 +302,7 @@ if __name__ == "__main__":
     M = cancer_categories.index('M')
 
     # initialize cancer_df from the raw data file
-    _cancer_df, cancer_dataset_name = create_initial_cancer_dataset(_data_dir)
+    _cancer_df, _cancer_dataset_name = create_initial_cancer_dataset(_data_dir)
     print('cancer_df.name: "{}"'.format(_cancer_df.name))
 
-    gen_new_data(N, P, _part_dir, _cancer_df, cancer_dataset_name)
+    gen_new_data(N, P, _part_dir, _cancer_df, _cancer_dataset_name)
