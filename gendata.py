@@ -183,7 +183,7 @@ def balance_dataset(df, verbose=False):
     return rebalanced_df
 
 
-def gen_new_data(N, P, dataset_name, verbose=verbose_global):
+def gen_new_data(N, P, part_dir, dataset_name, verbose=verbose_global):
 
     for i in range(P):
         malignant_imbalanced = create_imbalanced_dataset(cancer_df, M, N)
@@ -293,7 +293,7 @@ if __name__ == "__main__":
     N = my_args['num_copies_value']
 
     # initialize global environment variables ...
-    _data_dir, part_dir = setup_environment_variables()
+    _data_dir, _part_dir = setup_environment_variables()
 
     # setup 'cancer_categories' to be used to convert 'B' and 'M' into categorical (numeric) values
     cancer_categories = ['B', 'M']
@@ -305,4 +305,4 @@ if __name__ == "__main__":
     cancer_df, cancer_dataset_name = create_initial_cancer_dataset(_data_dir)
     print('cancer_df.name: "{}"'.format(cancer_df.name))
 
-    gen_new_data(N, P, cancer_dataset_name)
+    gen_new_data(N, P, _part_dir, cancer_dataset_name)
