@@ -138,7 +138,7 @@ def print_balance_stats(df):
     return b_rows, m_rows, t_rows
 
 
-def balance_dataset(df, verbose=False):
+def balance_dataset(cancer_df, df, verbose=False):
 
     # pass 'balance_dataset' a dataframe that should ideally be imbalanced and 'balance_dataset'
     # will apply Synthetic Minority Over-sampling Technique (aka: SMOTE) to reblance the data
@@ -183,7 +183,7 @@ def balance_dataset(df, verbose=False):
     return rebalanced_df
 
 
-def gen_new_data(N, P, part_dir, dataset_name, verbose=verbose_global):
+def gen_new_data(N, P, part_dir, cancer_df, dataset_name, verbose=verbose_global):
 
     for i in range(P):
         malignant_imbalanced = create_imbalanced_dataset(cancer_df, M, N)
@@ -191,7 +191,7 @@ def gen_new_data(N, P, part_dir, dataset_name, verbose=verbose_global):
         _, _, _ = print_balance_stats(malignant_imbalanced)
 
         print('\nrebalanced_df: should have M == B')
-        rebalanced_df = balance_dataset(malignant_imbalanced)
+        rebalanced_df = balance_dataset(cancer_df, malignant_imbalanced)
         _, _, _ = print_balance_stats(rebalanced_df)
         new_df = rebalanced_df.query('diagnosis=={}'.format(B))
 
@@ -201,7 +201,7 @@ def gen_new_data(N, P, part_dir, dataset_name, verbose=verbose_global):
 
         if verbose:
             print('\nrebalanced_df: should have B == M')
-        rebalanced_df = balance_dataset(malignant_imbalanced)
+        rebalanced_df = balance_dataset(cancer_df, malignant_imbalanced)
         _, _, _ = print_balance_stats(rebalanced_df)
         new_df = new_df.append(rebalanced_df.query('diagnosis=={}'.format(M)))
 
@@ -302,7 +302,7 @@ if __name__ == "__main__":
     M = cancer_categories.index('M')
 
     # initialize cancer_df from the raw data file
-    cancer_df, cancer_dataset_name = create_initial_cancer_dataset(_data_dir)
-    print('cancer_df.name: "{}"'.format(cancer_df.name))
+    _cancer_df, cancer_dataset_name = create_initial_cancer_dataset(_data_dir)
+    print('cancer_df.name: "{}"'.format(_cancer_df.name))
 
-    gen_new_data(N, P, _part_dir, cancer_dataset_name)
+    gen_new_data(N, P, _part_dir, _cancer_df, cancer_dataset_name)
