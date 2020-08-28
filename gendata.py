@@ -43,14 +43,6 @@ def setup_environment_variables():
         print('oops! directory named "data" not found under "{}"'.format(cwd))
         data_dir = os.path.join(cwd, 'data')
 
-    eda_dir = os.path.join(cwd, 'EDA')
-    if os.path.isdir(eda_dir):
-        print('eda_dir: {}'.format(eda_dir))
-    else:
-        print('directory named "EDA" not found under "{}"'.format(cwd))
-        print('creating "EDA" dir... "{}"'.format(eda_dir))
-        os.makedirs(eda_dir)
-
     part_dir = os.path.join(cwd, 'part-files')
     if os.path.isdir(part_dir):
         print('part_dir: {}'.format(part_dir))
@@ -59,7 +51,7 @@ def setup_environment_variables():
         print('creating "part-files" dir... "{}"'.format(part_dir))
         os.makedirs(part_dir)
 
-    return data_dir, eda_dir, part_dir
+    return data_dir, part_dir
 
 
 def now():
@@ -301,7 +293,7 @@ if __name__ == "__main__":
     N = my_args['num_copies_value']
 
     # initialize global environment variables ...
-    _data_dir, eda_dir, part_dir = setup_environment_variables()
+    _data_dir, part_dir = setup_environment_variables()
 
     # setup 'cancer_categories' to be used to convert 'B' and 'M' into categorical (numeric) values
     cancer_categories = ['B', 'M']
