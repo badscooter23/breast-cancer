@@ -43,14 +43,6 @@ def setup_environment_variables():
         print('oops! directory named "data" not found under "{}"'.format(cwd))
         data_dir = os.path.join(cwd, 'data')
 
-    eda_dir = os.path.join(cwd, 'EDA')
-    if os.path.isdir(eda_dir):
-        print('eda_dir: {}'.format(eda_dir))
-    else:
-        print('directory named "EDA" not found under "{}"'.format(cwd))
-        print('creating "EDA" dir... "{}"'.format(eda_dir))
-        os.makedirs(eda_dir)
-
     part_dir = os.path.join(cwd, 'part-files')
     if os.path.isdir(part_dir):
         print('part_dir: {}'.format(part_dir))
@@ -59,7 +51,7 @@ def setup_environment_variables():
         print('creating "part-files" dir... "{}"'.format(part_dir))
         os.makedirs(part_dir)
 
-    return cwd, data_dir, eda_dir, part_dir
+    return data_dir, part_dir
 
 
 def now():
@@ -76,10 +68,10 @@ def name_df(df, name, desc=""):
     return name
 
 
-def create_initial_cancer_dataset():
+def create_initial_cancer_dataset(data_dir, cancer_categories):
     # open the  cancer data file
     cancer_dataset_name = 'cancer_data'
-    cancer_df = pd.read_csv(os.path.join(cwd, data_dir, cancer_dataset_name + ".csv"))
+    cancer_df = pd.read_csv(os.path.join(data_dir, cancer_dataset_name + ".csv"))
 
     # convert 'diagnosis' column to a categorical
     cancer_df['diagnosis'] = pd.Categorical(cancer_df['diagnosis'], cancer_categories, ordered=True).codes
@@ -90,7 +82,7 @@ def create_initial_cancer_dataset():
     return cancer_df, cancer_dataset_name
 
 
-def create_imbalanced_dataset(df, over_balance_on, N=100, verbose=False):
+def create_imbalanced_dataset(df, cancer_categories, over_balance_on, N=100, verbose=False):
 
     # replicate the starting data frame (df) N times into df2
     if verbose:
@@ -130,7 +122,7 @@ def create_imbalanced_dataset(df, over_balance_on, N=100, verbose=False):
     return imbalanced_df
 
 
-def print_balance_stats(df):
+def print_balance_stats(df, cancer_categories):
 
     b_rows = len(df.query('diagnosis=={}'.format(B)))
     m_rows = len(df.query('diagnosis=={}'.format(M)))
@@ -146,7 +138,7 @@ def print_balance_stats(df):
     return b_rows, m_rows, t_rows
 
 
-def balance_dataset(df, verbose=False):
+def balance_dataset(cancer_df, cancer_categories, df, verbose=False):
 
     # pass 'balance_dataset' a dataframe that should ideally be imbalanced and 'balance_dataset'
     # will apply Synthetic Minority Over-sampling Technique (aka: SMOTE) to reblance the data
@@ -157,7 +149,7 @@ def balance_dataset(df, verbose=False):
 
     if verbose:
         print("initial balance statistics (before re-balancing)")
-        print_balance_state(df)
+        print_balance_state(df, cancer_categories)
 
     # separate the feature matrix (X) from the 'target vector' (y)
     # WARNING: code below assumes that the 'diagnosis', it the first column () in the dataframe
@@ -191,26 +183,26 @@ def balance_dataset(df, verbose=False):
     return rebalanced_df
 
 
-def gen_new_data(N, P, dataset_name, verbose=verbose_global):
+def gen_new_data(N, P, part_dir, cancer_df, cancer_categories, dataset_name, verbose=verbose_global):
 
     for i in range(P):
-        malignant_imbalanced = create_imbalanced_dataset(cancer_df, M, N)
+        malignant_imbalanced = create_imbalanced_dataset(cancer_df, cancer_categories, M, N)
         print('malignant_imbalanced: should have M >> B')
-        _, _, _ = print_balance_stats(malignant_imbalanced)
+        _, _, _ = print_balance_stats(malignant_imbalanced, cancer_categories)
 
         print('\nrebalanced_df: should have M == B')
-        rebalanced_df = balance_dataset(malignant_imbalanced)
-        _, _, _ = print_balance_stats(rebalanced_df)
+        rebalanced_df = balance_dataset(cancer_df, cancer_categories, malignant_imbalanced)
+        _, _, _ = print_balance_stats(rebalanced_df, cancer_categories)
         new_df = rebalanced_df.query('diagnosis=={}'.format(B))
 
-        benign_imbalanced = create_imbalanced_dataset(cancer_df, B, N)
+        benign_imbalanced = create_imbalanced_dataset(cancer_df, cancer_categories, B, N)
         print('\nmalignant_imbalanced: should have B >> M')
-        _, _, _ = print_balance_stats(benign_imbalanced)
+        _, _, _ = print_balance_stats(benign_imbalanced, cancer_categories)
 
         if verbose:
             print('\nrebalanced_df: should have B == M')
-        rebalanced_df = balance_dataset(malignant_imbalanced)
-        _, _, _ = print_balance_stats(rebalanced_df)
+        rebalanced_df = balance_dataset(cancer_df, cancer_categories, malignant_imbalanced)
+        _, _, _ = print_balance_stats(rebalanced_df, cancer_categories)
         new_df = new_df.append(rebalanced_df.query('diagnosis=={}'.format(M)))
 
         pf_name = os.path.join(part_dir, '{}-{}.csv'.format(dataset_name, str(i).zfill(5)))
@@ -301,16 +293,16 @@ if __name__ == "__main__":
     N = my_args['num_copies_value']
 
     # initialize global environment variables ...
-    cwd, data_dir, eda_dir, part_dir = setup_environment_variables()
+    _data_dir, _part_dir = setup_environment_variables()
 
     # setup 'cancer_categories' to be used to convert 'B' and 'M' into categorical (numeric) values
-    cancer_categories = ['B', 'M']
+    _cancer_categories = ['B', 'M']
     # remember the indices for B and M (for use in other functions, etc)
-    B = cancer_categories.index('B')
-    M = cancer_categories.index('M')
+    B = _cancer_categories.index('B')
+    M = _cancer_categories.index('M')
 
     # initialize cancer_df from the raw data file
-    cancer_df, cancer_dataset_name = create_initial_cancer_dataset()
-    print('cancer_df.name: "{}"'.format(cancer_df.name))
+    _cancer_df, _cancer_dataset_name = create_initial_cancer_dataset(_data_dir, _cancer_categories)
+    print('cancer_df.name: "{}"'.format(_cancer_df.name))
 
-    gen_new_data(N, P, cancer_dataset_name)
+    gen_new_data(N, P, _part_dir, _cancer_df, _cancer_categories, _cancer_dataset_name)
